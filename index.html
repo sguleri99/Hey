@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Will you be my Valentine?</title>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -11,29 +11,37 @@
 :root{
   --bg1:#ffd6e7;
   --bg2:#ffeef6;
+  --card:#ffffffcc;
   --yes:#ff3b7a;
+  --yesHover:#ff1f68;
 }
+
+*{box-sizing:border-box;}
 
 body{
   margin:0;
-  min-height:100vh;
+  min-height:100svh;
   display:grid;
   place-items:center;
   background:radial-gradient(circle at top,var(--bg2),var(--bg1));
   font-family:system-ui,sans-serif;
   overflow:hidden;
+  padding:16px;
 }
 
-canvas{
+#confettiCanvas{
   position:fixed;
   inset:0;
+  width:100vw;
+  height:100vh;
   pointer-events:none;
+  z-index:9999;
 }
 
 .card{
   width:min(720px,92vw);
-  padding:30px;
-  background:#ffffffcc;
+  padding:26px 22px;
+  background:var(--card);
   backdrop-filter:blur(10px);
   border-radius:22px;
   text-align:center;
@@ -41,19 +49,23 @@ canvas{
 }
 
 .art{
-  width:220px;
-  margin:auto;
+  width:min(260px,80vw);
+  margin:0 auto 10px;
   display:block;
+  filter:drop-shadow(0 10px 14px rgba(0,0,0,.12));
 }
 
 h1{
-  font-size:clamp(26px,4vw,42px);
-  margin:15px 0 20px;
+  font-size:clamp(26px,4vw,44px);
+  margin:12px 0 18px;
 }
 
 .button-zone{
   position:relative;
-  height:160px;
+  width:min(520px,92%);
+  height:150px;
+  margin:0 auto;
+  touch-action:none;
 }
 
 button{
@@ -66,35 +78,38 @@ button{
   border-radius:999px;
   border:none;
   cursor:pointer;
-  transition:.2s;
+  box-shadow:0 10px 24px rgba(0,0,0,.14);
+  transition:.12s ease;
 }
 
 #yesBtn{
-  left:20%;
+  left:18%;
   background:var(--yes);
   color:#fff;
 }
+#yesBtn:hover{background:var(--yesHover);}
 
 #noBtn{
-  left:60%;
+  left:62%;
   background:#e5e7eb;
+  color:#111827;
 }
 
 .hint{
   margin-top:10px;
-  font-size:14px;
+  font-size:13px;
   opacity:.7;
 }
 
 .result{
   display:none;
-  margin-top:20px;
-  animation:pop .3s ease;
+  margin-top:18px;
+  animation:pop .35s ease;
 }
 
 @keyframes pop{
-  from{transform:scale(.9);opacity:0}
-  to{transform:scale(1);opacity:1}
+  from{transform:scale(.96);opacity:0;}
+  to{transform:scale(1);opacity:1;}
 }
 </style>
 </head>
@@ -102,83 +117,123 @@ button{
 <body>
 
 <canvas id="confettiCanvas"></canvas>
+
 <audio id="bgMusic" src="audio.mp3" loop preload="auto"></audio>
 
-<div class="card">
+<main class="card">
 
-<!-- 🦉 OWL SVG -->
-<svg class="art" viewBox="0 0 320 240">
-<circle cx="160" cy="120" r="70" fill="#e5b086"/>
-<circle cx="140" cy="110" r="8"/>
-<circle cx="180" cy="110" r="8"/>
-<path d="M160 125 L155 135 L165 135 Z" fill="#ff6b81"/>
-<path d="M220 60 C220 40 240 35 250 50
-         C260 35 280 40 280 60
-         C280 80 250 95 250 105
-         C250 95 220 80 220 60Z"
-      fill="#ff3b7a"/>
+<!-- ORIGINAL DETAILED OWL -->
+<svg class="art" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fur" x1="0" x2="1">
+      <stop offset="0" stop-color="#f7c7a1"/>
+      <stop offset="1" stop-color="#f2a97b"/>
+    </linearGradient>
+    <linearGradient id="heart" x1="0" x2="1">
+      <stop offset="0" stop-color="#ff4d7d"/>
+      <stop offset="1" stop-color="#ff1f68"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Heart (behind head) -->
+  <path d="M250 50 C250 33 270 25 282 38
+           C294 25 314 33 314 50
+           C314 78 282 92 282 106
+           C282 92 250 78 250 50Z"
+        fill="url(#heart)"/>
+
+  <!-- Head -->
+  <path d="M90 120 C90 70 140 40 190 60
+           C240 40 290 70 290 120
+           C290 180 240 210 190 210
+           C140 210 90 180 90 120Z"
+        fill="url(#fur)"/>
+
+  <!-- Ears -->
+  <path d="M110 92 L95 55 L140 78 Z" fill="#f2a97b"/>
+  <path d="M270 92 L285 55 L240 78 Z" fill="#f2a97b"/>
+
+  <!-- Eyes -->
+  <circle cx="160" cy="130" r="8"/>
+  <circle cx="220" cy="130" r="8"/>
+
+  <!-- Nose -->
+  <path d="M190 144 C186 144 182 148 182 152
+           C182 160 190 164 190 170
+           C190 164 198 160 198 152
+           C198 148 194 144 190 144Z"
+        fill="#ff7aa2"/>
 </svg>
 
 <h1>Sofie will you be my valentine?</h1>
 
-<div class="button-zone" id="zone">
-<button id="yesBtn">Yes</button>
-<button id="noBtn">No</button>
-</div>
+<section class="button-zone" id="zone">
+  <button id="yesBtn">Yes</button>
+  <button id="noBtn">No</button>
+</section>
 
 <div class="hint" id="hint">“No” seems a bit shy 😈</div>
 
-<div class="result" id="result">
-<h2>YAY! 🎉 Lysm &lt;3</h2>
-<img src="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif" width="300">
-</div>
+<section class="result" id="result">
+  <h2>YAY! 🎉 Lysm &lt;3</h2>
+  <img src="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif" width="300">
+</section>
 
-</div>
+</main>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded",function(){
 
+const zone=document.getElementById("zone");
 const yesBtn=document.getElementById("yesBtn");
 const noBtn=document.getElementById("noBtn");
-const zone=document.getElementById("zone");
 const result=document.getElementById("result");
 const hint=document.getElementById("hint");
 const bgMusic=document.getElementById("bgMusic");
 
-/* 🎵 MUSIC */
+/* MUSIC */
 function startMusic(){
   bgMusic.play().catch(()=>{});
 }
 window.addEventListener("load",startMusic);
 document.addEventListener("click",startMusic,{once:true});
 
-/* 🎉 CONFETTI */
+/* CONFETTI */
 const canvas=document.getElementById("confettiCanvas");
-const myConfetti=confetti.create(canvas,{resize:true});
+function resizeCanvas(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+
+const confettiInstance=confetti.create(canvas,{resize:true});
 
 /* YES CLICK */
-yesBtn.addEventListener("click",function(){
+yesBtn.addEventListener("click",()=>{
   zone.style.display="none";
   hint.style.display="none";
   result.style.display="block";
-  myConfetti({
+  confettiInstance({
     particleCount:300,
     spread:140,
-    origin:{y:0.6}
+    origin:{x:0.5,y:0.55}
   });
 });
 
-/* NO RUNS */
-zone.addEventListener("mousemove",function(e){
+/* NO RUNS AWAY */
+let yesScale=1;
+zone.addEventListener("pointermove",e=>{
   const rect=noBtn.getBoundingClientRect();
   const dist=Math.hypot(
     rect.left+rect.width/2-e.clientX,
     rect.top+rect.height/2-e.clientY
   );
-  if(dist<120){
+  if(dist<140){
     noBtn.style.left=Math.random()*70+"%";
     noBtn.style.top=Math.random()*100+"px";
-    yesBtn.style.transform="translateY(-50%) scale(1.2)";
+    yesScale=Math.min(2.2,yesScale+0.1);
+    yesBtn.style.transform=`translateY(-50%) scale(${yesScale})`;
   }
 });
 
